@@ -476,6 +476,8 @@ function ScoreKeeper() {
 
   // Ref to track if a state change came from Firebase (so we don't write it back)
   const skipNextWrite = React.useRef(false);
+  // Track the last celebration trigger we've seen, so opening the page doesn't replay stale ones
+  const lastCelebrationTs = React.useRef(0);
   // Stable device ID for presence tracking
   const deviceId = React.useRef(Math.random().toString(36).substring(2, 10)).current;
 
@@ -485,6 +487,8 @@ function ScoreKeeper() {
       setSyncStatus('offline');
       return;
     }
+    // Reset celebration tracker when joining a new session
+    lastCelebrationTs.current = 0;
     const {
       ref,
       onValue,
@@ -531,6 +535,23 @@ function ScoreKeeper() {
       console.warn('Firebase listener error:', err);
     });
 
+    // Watch celebration trigger
+    const celebrationRef = ref(db, `sessions/${sessionCode}/celebration`);
+    const unsubCelebration = onValue(celebrationRef, snap => {
+      const val = snap.val();
+      if (!val || typeof val.ts !== 'number') return;
+      // First load: just record the timestamp, don't open the modal
+      if (lastCelebrationTs.current === 0) {
+        lastCelebrationTs.current = val.ts;
+        return;
+      }
+      // New trigger - open the modal on every device
+      if (val.ts > lastCelebrationTs.current) {
+        lastCelebrationTs.current = val.ts;
+        setCelebrating(true);
+      }
+    });
+
     // Connection state
     const connectedRef = ref(db, '.info/connected');
     const unsubConn = onValue(connectedRef, snap => {
@@ -548,6 +569,7 @@ function ScoreKeeper() {
     return () => {
       unsubPresence();
       unsubState();
+      unsubCelebration();
       unsubConn();
       // Remove our presence entry on unmount
       try {
@@ -1629,7 +1651,27 @@ function ScoreKeeper() {
       className: "w-4 h-4"
     }), mode.label);
   })), total(sortedPlayers[0]) > 0 && !sortedPlayers[0].eliminated && /*#__PURE__*/React.createElement("button", {
-    onClick: () => setCelebrating(true),
+    onClick: () => {
+      // If connected to Firebase, broadcast to all devices.
+      // Local modal opens via the listener picking up the new timestamp.
+      if (window.firebaseDb) {
+        try {
+          const {
+            ref,
+            set
+          } = window.firebaseDb._helpers;
+          const db = window.firebaseDb.instance;
+          set(ref(db, `sessions/${sessionCode}/celebration`), {
+            ts: Date.now()
+          });
+        } catch (e) {
+          // Fallback: open locally
+          setCelebrating(true);
+        }
+      } else {
+        setCelebrating(true);
+      }
+    },
     style: {
       background: `linear-gradient(135deg, ${AMBER} 0%, ${AMBER_BRIGHT} 100%)`,
       border: 'none',
