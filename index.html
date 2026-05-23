@@ -464,15 +464,14 @@ function ScoreKeeper() {
 
   // ─── Firebase sync state ──────────────────────────────────────────────
   const [sessionCode, setSessionCode] = React.useState(() => {
-    // Read code from URL hash on load, or generate fresh one
+    // Read code from URL hash on load if present (so "new session" links still work),
+    // otherwise default to a shared session that all devices join automatically
     const hash = window.location.hash.replace('#', '').toUpperCase();
     if (/^[A-Z0-9-]{4,32}$/.test(hash)) return hash;
-    return generateSessionCode();
+    return 'WAYWARD-MAIN';
   });
   const [syncStatus, setSyncStatus] = React.useState('connecting'); // connecting | synced | offline
   const [connectedDevices, setConnectedDevices] = React.useState(1);
-  const [showSessionEdit, setShowSessionEdit] = React.useState(false);
-  const [tempSessionCode, setTempSessionCode] = React.useState('');
 
   // Ref to track if a state change came from Firebase (so we don't write it back)
   const skipNextWrite = React.useRef(false);
@@ -1450,114 +1449,8 @@ function ScoreKeeper() {
     style: {
       display: 'flex',
       alignItems: 'center',
-      gap: '14px',
-      flexWrap: 'wrap'
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: '10px',
-      letterSpacing: '0.25em',
-      color: `${AMBER}99`,
-      fontWeight: 700
-    }
-  }, "SESSION"), showSessionEdit ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: 'flex',
-      gap: '6px',
-      alignItems: 'center'
-    }
-  }, /*#__PURE__*/React.createElement("input", {
-    autoFocus: true,
-    value: tempSessionCode,
-    onChange: e => setTempSessionCode(e.target.value.toUpperCase()),
-    onKeyDown: e => {
-      if (e.key === 'Enter') joinSession();
-      if (e.key === 'Escape') {
-        setShowSessionEdit(false);
-        setTempSessionCode('');
-      }
-    },
-    placeholder: "WAYWARD-XXXX",
-    style: {
-      background: 'rgba(0, 0, 0, 0.4)',
-      border: `1px solid ${AMBER}`,
-      color: '#fff',
-      padding: '6px 10px',
-      fontSize: '15px',
-      fontWeight: 700,
-      fontFamily: '"Bebas Neue", Impact, sans-serif',
-      letterSpacing: '0.1em',
-      outline: 'none',
-      width: '180px'
-    }
-  }), /*#__PURE__*/React.createElement("button", {
-    onClick: joinSession,
-    style: {
-      background: AMBER,
-      border: `1px solid ${AMBER}`,
-      color: '#0A1628',
-      padding: '6px 12px',
-      fontSize: '10px',
-      letterSpacing: '0.15em',
-      fontWeight: 800,
-      cursor: 'pointer',
-      fontFamily: 'inherit'
-    }
-  }, "JOIN"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      setShowSessionEdit(false);
-      setTempSessionCode('');
-    },
-    style: {
-      background: 'transparent',
-      border: '1px solid rgba(255,255,255,0.2)',
-      color: 'rgba(255,255,255,0.6)',
-      padding: '6px 12px',
-      fontSize: '10px',
-      letterSpacing: '0.15em',
-      fontWeight: 700,
-      cursor: 'pointer',
-      fontFamily: 'inherit'
-    }
-  }, "CANCEL")) : /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      setShowSessionEdit(true);
-      setTempSessionCode(sessionCode);
-    },
-    title: "Click to enter a different session code",
-    style: {
-      background: 'transparent',
-      border: 'none',
-      color: '#fff',
-      fontSize: '18px',
-      fontWeight: 800,
-      fontFamily: '"Bebas Neue", Impact, sans-serif',
-      letterSpacing: '0.08em',
-      cursor: 'pointer',
-      padding: 0,
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px'
-    }
-  }, sessionCode, /*#__PURE__*/React.createElement(Edit3, {
-    className: "w-3 h-3",
-    style: {
-      color: AMBER,
-      opacity: 0.6
-    }
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '14px',
-      flexWrap: 'wrap'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '6px',
-      fontSize: '10px',
+      gap: '8px',
+      fontSize: '11px',
       letterSpacing: '0.2em',
       fontWeight: 700,
       color: syncStatus === 'synced' ? '#7fff7f' : syncStatus === 'offline' ? '#ff6b6b' : AMBER
@@ -1595,9 +1488,9 @@ function ScoreKeeper() {
       e.currentTarget.style.background = 'transparent';
       e.currentTarget.style.color = AMBER;
     }
-  }, /*#__PURE__*/React.createElement(Sparkles, {
+  }, /*#__PURE__*/React.createElement(RotateCcw, {
     className: "w-3 h-3"
-  }), "NEW SESSION")), /*#__PURE__*/React.createElement("style", null, `
+  }), "NEW SESSION"), /*#__PURE__*/React.createElement("style", null, `
                 @keyframes wayward-pulse {
                   0%, 100% { opacity: 1; transform: scale(1); }
                   50% { opacity: 0.5; transform: scale(0.85); }
