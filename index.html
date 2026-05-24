@@ -1653,8 +1653,8 @@ function ScoreKeeper() {
   }, total(sortedPlayers[0]), " PTS")))), leaderboardMode === 'totals' && /*#__PURE__*/React.createElement("div", {
     style: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-      gap: '8px'
+      gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
+      gap: '10px'
     }
   }, sortedPlayers.map((player, rank) => {
     const playerTotal = total(player);
@@ -1668,11 +1668,11 @@ function ScoreKeeper() {
       style: {
         background: elim ? 'rgba(255, 255, 255, 0.02)' : 'rgba(245, 166, 35, 0.04)',
         border: `1px solid ${elim ? 'rgba(255, 255, 255, 0.08)' : AMBER + '20'}`,
-        padding: '10px 14px',
+        padding: '16px 20px',
         display: 'grid',
         gridTemplateColumns: 'auto auto 1fr auto',
         alignItems: 'center',
-        gap: '12px',
+        gap: '16px',
         position: 'relative',
         overflow: 'hidden',
         opacity: elim ? 0.45 : 1
@@ -1690,11 +1690,11 @@ function ScoreKeeper() {
       }
     }), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: '22px',
+        fontSize: '34px',
         fontWeight: 900,
         fontFamily: '"Bebas Neue", Impact, sans-serif',
         color: elim ? 'rgba(255, 255, 255, 0.25)' : rank < 3 ? AMBER : 'rgba(255, 255, 255, 0.3)',
-        minWidth: '28px',
+        minWidth: '40px',
         letterSpacing: '0.02em',
         position: 'relative',
         zIndex: 1,
@@ -1702,26 +1702,21 @@ function ScoreKeeper() {
       }
     }, elim ? '—' : String(rank + 1).padStart(2, '0')), /*#__PURE__*/React.createElement("div", {
       style: {
-        width: '20px',
-        height: '20px',
+        width: '28px',
+        height: '28px',
         position: 'relative',
         zIndex: 1,
         display: 'flex',
         alignItems: 'center'
       }
     }, elim ? /*#__PURE__*/React.createElement(Skull, {
-      className: "w-4 h-4",
+      className: "w-5 h-5",
       style: {
         color: 'rgba(255, 107, 107, 0.6)'
       }
-    }) : rank < 3 ? /*#__PURE__*/React.createElement("span", {
+    }) : rank < 3 ? getRankIcon(rank) : null), /*#__PURE__*/React.createElement("div", {
       style: {
-        transform: 'scale(0.85)',
-        transformOrigin: 'left center'
-      }
-    }, getRankIcon(rank)) : null), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: '14px',
+        fontSize: '22px',
         fontWeight: 600,
         color: elim ? 'rgba(255, 255, 255, 0.4)' : '#fff',
         overflow: 'hidden',
@@ -1732,7 +1727,7 @@ function ScoreKeeper() {
         textDecoration: elim ? 'line-through' : 'none',
         display: 'flex',
         alignItems: 'center',
-        gap: '8px'
+        gap: '10px'
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
@@ -1741,22 +1736,22 @@ function ScoreKeeper() {
       }
     }, player.name), elim && /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: '8px',
+        fontSize: '10px',
         letterSpacing: '0.2em',
         color: '#ff6b6b',
         fontWeight: 700,
         textDecoration: 'none',
-        padding: '2px 5px',
+        padding: '3px 7px',
         border: '1px solid rgba(255, 107, 107, 0.4)',
         flexShrink: 0
       }
     }, "OUT")), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: '24px',
+        fontSize: '38px',
         fontWeight: 800,
         fontFamily: '"Bebas Neue", Impact, sans-serif',
         color: elim ? 'rgba(255, 255, 255, 0.3)' : playerTotal !== 0 ? '#fff' : 'rgba(255, 255, 255, 0.25)',
-        minWidth: '50px',
+        minWidth: '70px',
         textAlign: 'right',
         letterSpacing: '0.02em',
         position: 'relative',
